@@ -1,87 +1,220 @@
-# **📦 Sistema de Pedidos \- Spring Boot & Apache Kafka**
+# 📦 Sistema de Pedidos com Spring Boot e Apache Kafka
 
-Um microserviço robusto desenvolvido com **Java** e **Spring Boot**, focado no processamento de pedidos em tempo real utilizando o **Apache Kafka** como mensageria assíncrona.
+Um microserviço desenvolvido em **Java** com **Spring Boot**, projetado para o processamento assíncrono de pedidos utilizando **Apache Kafka** como plataforma de mensageria. A aplicação demonstra uma arquitetura desacoplada baseada em eventos, permitindo escalabilidade e comunicação eficiente entre serviços.
 
-## ---
+---
 
-**🚀 Tecnologias Utilizadas**
+# 🚀 Tecnologias Utilizadas
 
-> * **Java 17 / 21**  
-> * **Spring Boot 3.3.x**  
-  * Spring Web  
-  * Spring Kafka  
-> * **Apache Kafka** & **Zookeeper / KRaft**  
-> * **Maven** (Gerenciador de dependências)
+- **Java 17 / 21**
+- **Spring Boot 3.3.x**
+    - Spring Web
+    - Spring Kafka
+- **Apache Kafka**
+- **Apache Zookeeper** ou **KRaft**
+- **Maven**
 
-## ---
+---
 
-**🏛️ Arquitetura do Projeto**
+# 🏗️ Arquitetura
 
-O projeto utiliza o Apache Kafka para garantir o desacoplamento e a comunicação assíncrona entre o serviço de criação de pedidos e os consumidores downstream (como serviços de pagamento, estoque ou notificação).  
-`[ Cliente / HTTP ] ──> [ Controller / Pedidos ] ──> [ Kafka Producer ]`  
-                                                            `│`  
-                                                            `▼`  
-                                                     `[ Tópico Kafka ]`  
-                                                            `│`  
-                                                            `▼`  
-                                                    `[ Kafka Consumer ]`
+A aplicação segue uma arquitetura orientada a eventos (*Event-Driven Architecture*), onde o serviço responsável pela criação de pedidos publica mensagens em um tópico Kafka. Outros microsserviços podem consumir esses eventos para executar tarefas como processamento de pagamentos, controle de estoque ou envio de notificações.
 
-## ---
+```text
+Cliente (HTTP)
+      │
+      ▼
+Controller (Pedidos)
+      │
+      ▼
+Kafka Producer
+      │
+      ▼
++----------------+
+|  Tópico Kafka  |
++----------------+
+      │
+      ▼
+Kafka Consumer
+      │
+      ├── Serviço de Pagamentos
+      ├── Serviço de Estoque
+      └── Serviço de Notificações
+```
 
-**🛠️ Como Executar o Projeto Localmente**
+---
 
-### **Pré-requisitos**
+# ⚙️ Como Executar o Projeto
 
-> * **Java JDK 17+** instalado  
-> * **Maven** instalado (ou utilizar o wrapper ./mvnw)  
-> * Instância do **Apache Kafka** em execução localmente (ou via Docker)
+## Pré-requisitos
 
-### **1\. Clonar o repositório**
+- Java JDK 17 ou superior
+- Maven (ou Maven Wrapper)
+- Apache Kafka em execução
+- Docker (opcional)
 
-`git clone https://github.com/SeuUsuario/seu-repositorio.git`  
-`cd seu-repositorio`
+## 1. Clonar o repositório
 
-### **2\. Configurar o Apache Kafka**
+```bash
+git clone https://github.com/SeuUsuario/seu-repositorio.git
+cd seu-repositorio
+```
 
-Garanta que o cluster Kafka esteja rodando localmente na porta padrão 9092 (ou ajuste as configurações no arquivo application.properties / application.yml).  
-Exemplo de subida via Docker Compose (se aplicável):  
-`docker-compose up -d`
+## 2. Iniciar o Kafka
 
-### **3\. Compilar e Executar a Aplicação**
+Certifique-se de que o Kafka esteja disponível na porta **9092**.
 
-`# Compilar o projeto`  
-`./mvnw clean package`
+Caso utilize Docker Compose:
 
-`# Executar a aplicação`  
-`./mvnw spring-boot:run`  
-A aplicação estará acessível em http://localhost:8080.
+```bash
+docker-compose up -d
+```
 
-## ---
+Se necessário, ajuste as configurações no arquivo:
 
-**🔌 Endpoints Principais**
+```properties
+application.properties
+```
 
-| Método | Endpoint | Descrição   |
-| :---- | :---- | :---- |
-| POST | /api/pedidos | Envia um novo pedido para o tópico do Kafka |
-| GET | /api/pedidos | Lista os pedidos (caso aplicável) |
+ou
 
-### **Exemplo de Payload (POST /api/pedidos)**
+```yaml
+application.yml
+```
 
-`{`  
-  `"id": "12345",`  
-  `"cliente": "João Silva",`  
-  `"valorTotal": 150.50,`  
-  `"itens": [`  
-    `{`  
-      `"produto": "Teclado Mecânico",`  
-      `"quantidade": 1,`  
-      `"preco": 150.50`  
-    `}`  
-  `]`  
-`}`
+---
 
-## ---
+## 3. Compilar o projeto
 
-**✒️ Autor**
+```bash
+./mvnw clean package
+```
 
-Desenvolvido por **\[Seu Nome\]** — sinta-se à vontade para entrar em contato ou conectar-se no [LinkedIn](https://linkedin.com)\!
+---
+
+## 4. Executar a aplicação
+
+```bash
+./mvnw spring-boot:run
+```
+
+A aplicação ficará disponível em:
+
+```text
+http://localhost:8080
+```
+
+---
+
+# 📡 API
+
+## Criar Pedido
+
+**POST** `/api/pedidos`
+
+Publica um novo pedido no tópico Kafka.
+
+### Exemplo de requisição
+
+```json
+{
+  "id": "12345",
+  "cliente": "João Silva",
+  "valorTotal": 150.50,
+  "itens": [
+    {
+      "produto": "Teclado Mecânico",
+      "quantidade": 1,
+      "preco": 150.50
+    }
+  ]
+}
+```
+
+### Resposta esperada
+
+```json
+{
+  "mensagem": "Pedido enviado para processamento."
+}
+```
+
+---
+
+## Listar Pedidos
+
+**GET** `/api/pedidos`
+
+Retorna a lista de pedidos (caso implementado).
+
+---
+
+# 📂 Estrutura do Projeto
+
+```text
+src
+├── main
+│   ├── java
+│   │   └── com
+│   │       └── exemplo
+│   │           └── pedidos
+│   │               ├── config
+│   │               ├── controller
+│   │               ├── consumer
+│   │               ├── dto
+│   │               ├── model
+│   │               ├── producer
+│   │               ├── service
+│   │               └── PedidoApplication.java
+│   └── resources
+│       ├── application.properties
+│       └── application.yml
+└── test
+```
+
+---
+
+# 🔄 Fluxo de Processamento
+
+1. O cliente envia uma requisição HTTP.
+2. O Controller recebe o pedido.
+3. O Producer publica o evento no Kafka.
+4. O pedido é armazenado em um tópico.
+5. Os Consumers processam a mensagem de forma assíncrona.
+6. Outros microsserviços podem consumir o mesmo evento sem alterar a aplicação principal.
+
+---
+
+# 🎯 Objetivos do Projeto
+
+- Demonstrar comunicação assíncrona utilizando Apache Kafka.
+- Aplicar boas práticas de desenvolvimento com Spring Boot.
+- Implementar uma arquitetura baseada em eventos.
+- Servir como base para estudos de microsserviços.
+- Demonstrar integração entre Producer e Consumer.
+
+---
+
+# 📚 Conceitos Demonstrados
+
+- Comunicação assíncrona
+- Mensageria
+- Apache Kafka
+- Event-Driven Architecture (EDA)
+- Producer e Consumer
+- REST API
+- Spring Boot
+- Injeção de Dependências
+- Serialização de Objetos
+
+---
+
+# 👨‍💻 Autor
+
+Desenvolvido para fins de estudo e demonstração de conhecimentos em **Spring Boot**, **Apache Kafka** e arquitetura de microsserviços.
+
+---
+
+# 📄 Licença
+
+Este projeto está licenciado sob a licença MIT. Sinta-se à vontade para utilizar como referência para estudos.
