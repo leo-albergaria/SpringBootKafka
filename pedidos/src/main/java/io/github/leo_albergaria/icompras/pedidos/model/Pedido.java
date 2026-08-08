@@ -1,5 +1,6 @@
 package io.github.leo_albergaria.icompras.pedidos.model;
 
+import io.github.leo_albergaria.icompras.pedidos.client.representation.ClienteRepresentation;
 import io.github.leo_albergaria.icompras.pedidos.model.enums.StatusPedido;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,7 +53,7 @@ public class Pedido {
     @Column(name = "codigo_rastreio")
     private String codigoRastreio;
 
-    @Column(name = "url_nf")
+    @Column(name = "url_nf", length = 1000)
     private String urlNotaFiscal;
 
     @Transient
@@ -60,4 +61,9 @@ public class Pedido {
 
     @OneToMany(mappedBy = "pedido")
     private List<ItemPedido> itens;
+
+    @Transient
+    private ClienteRepresentation dadosCliente;
+
+
 }

@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  minio:
+    # Fixa na tag exata da release com o login e console tradicional
+    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
+    container_name: minio
+    ports:
+      - "9000:9000" # API S3
+      - "9001:9001" # Console Web
+    volumes:
+      - ./docs:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    command: server /data --console-address ":9001"
+    restart: unless-stopped

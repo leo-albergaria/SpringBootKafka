@@ -12,7 +12,7 @@ public class ServicoBancarioClient {
 
     public String solicitarPagamento(Pedido pedido) {
         log.info("Solicitando pagamento para o pedido: {}", pedido.getCodigo());
-        return "Pagamento solicitado com sucesso para o pedido: " + UUID.randomUUID().toString();
+        return UUID.randomUUID().toString();
     }
 
 }
